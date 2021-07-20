@@ -1,14 +1,21 @@
-//Global
-@import 'vars';
-@import 'fonts';
-@import 'reset';
-@import 'libs';
-@import 'global';
+//Base
+@import 'base/vars';
+@import 'base/fonts';
+@import 'base/reset';
+@import 'base/libs';
+@import 'base/global';
+@import 'base/typography';
+@import 'base/animations';
+
+//layout
+@import 'layout/header';
+@import 'layout/navigation';
+@import 'layout/footer';
 
 //Components
-@import 'components/header';
-@import 'components/footer';
 @import 'components/buttons';
 @import 'components/form';
+@import 'components/card';
+
 
 

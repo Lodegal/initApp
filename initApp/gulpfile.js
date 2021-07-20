@@ -1,11 +1,10 @@
-const { src, dest, watch, parallel, series}  = require('gulp');
+const {src, dest, watch, parallel, series}  = require('gulp');
 
 const scss          = require('gulp-sass');
 const concat        = require('gulp-concat');
 const browserSync   = require('browser-sync').create();
 const bssi          = require('browsersync-ssi');
 const ssi           = require('ssi');
-const uglify        = require('gulp-uglify-es').default;
 const autoprefixer  = require('gulp-autoprefixer');
 const imagemin      = require('gulp-imagemin');
 const del           = require('del');
@@ -16,7 +15,7 @@ function browsersync() {
             baseDir: 'app/',
             middleware: bssi({ baseDir: 'app/', ext: '.html' })
         },
-        tunnel: 'x-project', // Attempt to use the URL https://x-project.loca.lt
+        tunnel: 'init-app', // Attempt to use the URL https://init-app.loca.lt
         notify: false,
         online: true
     })
@@ -44,18 +43,6 @@ function images() {
     .pipe(dest('dist/images'))
 }
 
-function scripts() {
-  return src([
-    'node_modules/jquery/dist/jquery.js',
-    'app/js/main.js'
-  ])
-    .pipe(concat('main.min.js'))
-    .pipe(uglify())
-    .pipe(dest('app/js'))
-    .pipe(browserSync.stream())
-}
-
-
 function styles() {
   return src('app/scss/style.scss')
       .pipe(scss({outputStyle: 'compressed'}))
@@ -72,7 +59,8 @@ function build() {
   return src([
     'app/css/style.min.css',
     'app/fonts/**/*',
-    'app/js/main.min.js',
+    'app/js/main.js',
+    'app/libs/**/*'
   ], {base: 'app'})
     .pipe(dest('dist'))
 }
@@ -84,7 +72,7 @@ async function buildhtml() {
 
 function watching() {
   watch(['app/scss/**/*.scss'], styles);
-  watch(['app/js/**/*.js', '!app/js/main.min.js'], scripts);
+  watch(['app/js/**/*.js']).on('change', browserSync.reload);
   watch(['app/*.html']).on('change', browserSync.reload);
   watch(['app/parts/*.html']).on('change', browserSync.reload);
 }
@@ -92,12 +80,11 @@ function watching() {
 exports.styles = styles;
 exports.watching = watching;
 exports.browsersync = browsersync;
-exports.scripts = scripts;
 exports.images = images;
 exports.cleanDist = cleanDist;
 
 
 exports.build = series(cleanDist, images, build, buildhtml);
-exports.default = parallel(styles ,scripts ,browsersync, watching);
+exports.default = parallel(styles,browsersync, watching);
 
 
